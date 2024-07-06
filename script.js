@@ -1,237 +1,12 @@
-
-
-
-// document.addEventListener('DOMContentLoaded', async function () {
-//   const barCtx = document.getElementById('barChart').getContext('2d');
-//   const lineCtx = document.getElementById('lineChart').getContext('2d');
-//   const pieCtx = document.getElementById('pieChart').getContext('2d');
-//   const scatterCtx = document.getElementById('scatterPlot').getContext('2d');
-//   let barChart, lineChart, pieChart, scatterChart;
-//   let tracksData = [];
-
-//   const clientId = '6df35adad2b6400792736a553e61b71c';
-//   const clientSecret = '8ce26fc583d44152ba30cfa28d94b270';
-
-
-//   async function getAccessToken() {
-//       const response = await fetch('https://accounts.spotify.com/api/token', {
-//           method: 'POST',
-//           headers: {
-//               'Content-Type': 'application/x-www-form-urlencoded',
-//               'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
-//           },
-//           body: 'grant_type=client_credentials'
-//       });
-
-//       const data = await response.json();
-//       return data.access_token;
-//   }
-
-//   async function fetchBollywoodTracks(accessToken) {
-//       let allTracks = [];
-//       let limit = 50;
-//       let offset = 0;
-//       let total = 0;
-
-//       do {
-//           const response = await fetch(`https://api.spotify.com/v1/search?q=year:2023%20genre:bollywood&type=track&market=IN&limit=${limit}&offset=${offset}`, {
-//               headers: {
-//                   'Authorization': 'Bearer ' + accessToken
-//               }
-//           });
-
-//           if (!response.ok) {
-//               throw new Error(`Spotify API error: ${response.statusText}`);
-//           }
-
-//           const data = await response.json();
-//           const tracks = data.tracks.items.filter(track => {
-//               const releaseYear = new Date(track.album.release_date).getFullYear();
-//               return releaseYear === 2023;
-//           });
-
-//           total = data.tracks.total;
-//           allTracks = allTracks.concat(tracks);
-//           offset += limit;
-//       } while (offset < 1000);
-
-//       console.log('Fetched Tracks:', allTracks);
-//       return allTracks;
-//   }
-
-//   function updateCharts(filteredTracks) {
-//       const labels = filteredTracks.slice(0, 20).map(track => track.name);
-//       const popularityData = filteredTracks.slice(0, 20).map(track => track.popularity);
-//       const durationData = filteredTracks.slice(0, 20).map(track => track.duration_ms / 1000);
-
-//       updateBarChart(labels, popularityData);
-//       updateLineChart(labels, durationData);
-//       updatePieChart(labels, popularityData);
-//       updateScatterChart(filteredTracks.slice(0, 20));
-//   }
-
-//   function updateBarChart(labels, popularityData) {
-//       if (barChart) {
-//           barChart.destroy();
-//       }
-//       barChart = new Chart(barCtx, {
-//           type: 'bar',
-//           data: {
-//               labels: labels,
-//               datasets: [{
-//                   label: 'Popularity',
-//                   data: popularityData,
-//                   backgroundColor: 'rgba(54, 162, 235, 0.2)',
-//                   borderColor: 'rgba(54, 162, 235, 1)',
-//                   borderWidth: 1
-//               }]
-//           },
-//           options: {
-//               scales: {
-//                   y: {
-//                       beginAtZero: true
-//                   }
-//               }
-//           }
-//       });
-//   }
-
-//   function updateLineChart(labels, durationData) {
-//       if (lineChart) {
-//           lineChart.destroy();
-//       }
-//       lineChart = new Chart(lineCtx, {
-//           type: 'line',
-//           data: {
-//               labels: labels,
-//               datasets: [{
-//                   label: 'Duration (seconds)',
-//                   data: durationData,
-//                   backgroundColor: 'rgba(75, 192, 192, 0.2)',
-//                   borderColor: 'rgba(75, 192, 192, 1)',
-//                   borderWidth: 1
-//               }]
-//           },
-//           options: {
-//               scales: {
-//                   y: {
-//                       beginAtZero: true
-//                   }
-//               }
-//           }
-//       });
-//   }
-
-//   function updatePieChart(labels, popularityData) {
-//       if (pieChart) {
-//           pieChart.destroy();
-//       }
-//       pieChart = new Chart(pieCtx, {
-//           type: 'pie',
-//           data: {
-//               labels: labels,
-//               datasets: [{
-//                   label: 'Popularity',
-//                   data: popularityData,
-//                   backgroundColor: [
-//                       'rgba(255, 99, 132, 0.2)',
-//                       'rgba(54, 162, 235, 0.2)',
-//                       'rgba(255, 206, 86, 0.2)',
-//                       'rgba(75, 192, 192, 0.2)',
-//                       'rgba(153, 102, 255, 0.2)',
-//                       'rgba(255, 159, 64, 0.2)',
-//                       'rgba(255, 99, 132, 0.2)',
-//                       'rgba(54, 162, 235, 0.2)',
-//                       'rgba(255, 206, 86, 0.2)',
-//                       'rgba(75, 192, 192, 0.2)'
-//                   ],
-//                   borderColor: [
-//                       'rgba(255, 99, 132, 1)',
-//                       'rgba(54, 162, 235, 1)',
-//                       'rgba(255, 206, 86, 1)',
-//                       'rgba(75, 192, 192, 1)',
-//                       'rgba(153, 102, 255, 1)',
-//                       'rgba(255, 159, 64, 1)',
-//                       'rgba(255, 99, 132, 1)',
-//                       'rgba(54, 162, 235, 1)',
-//                       'rgba(255, 206, 86, 1)',
-//                       'rgba(75, 192, 192, 1)'
-//                   ],
-//                   borderWidth: 1
-//               }]
-//           }
-//       });
-//   }
-
-//   function updateScatterChart(tracks) {
-//       if (scatterChart) {
-//           scatterChart.destroy();
-//       }
-//       const scatterData = tracks.map(track => ({
-//           x: track.popularity,
-//           y: track.duration_ms / 1000,
-//           label: track.name
-//       }));
-
-//       scatterChart = new Chart(scatterCtx, {
-//           type: 'scatter',
-//           data: {
-//               datasets: [{
-//                   label: 'Popularity vs Duration',
-//                   data: scatterData,
-//                   backgroundColor: 'rgba(255, 159, 64, 0.2)',
-//                   borderColor: 'rgba(255, 159, 64, 1)',
-//                   borderWidth: 1
-//               }]
-//           },
-//           options: {
-//               scales: {
-//                   x: {
-//                       beginAtZero: true,
-//                       title: {
-//                           display: true,
-//                           text: 'Popularity'
-//                       }
-//                   },
-//                   y: {
-//                       beginAtZero: true,
-//                       title: {
-//                           display: true,
-//                           text: 'Duration (seconds)'
-//                       }
-//                   }
-//               }
-//           }
-//       });
-//   }
-
-//   async function main() {
-//       const accessToken = await getAccessToken();
-//       tracksData = await fetchBollywoodTracks(accessToken);
-
-//       document.getElementById('filterInput').addEventListener('input', function () {
-//           const filterValue = this.value.toLowerCase();
-//           const filteredTracks = tracksData.filter(track => track.name.toLowerCase().includes(filterValue));
-//           updateCharts(filteredTracks);
-//       });
-
-//       updateCharts(tracksData);
-//   }
-
-//   main();
-// });
-
-
-// Assuming tracksData contains fetched Spotify tracks data
-
 document.addEventListener('DOMContentLoaded', async function () {
   const barCtx = document.getElementById('barChart').getContext('2d');
   const lineCtx = document.getElementById('lineChart').getContext('2d');
   const pieCtx = document.getElementById('pieChart').getContext('2d');
   const scatterCtx = document.getElementById('scatterPlot').getContext('2d');
   const artistPopularityCtx = document.getElementById('artistPopularityChart').getContext('2d'); // Added artistPopularityCtx
+  const lineCtx2 = document.getElementById('lineChart2').getContext('2d');
 
-  let barChart, lineChart, pieChart, scatterChart,artistPopularityChart;
+  let barChart, lineChart, pieChart, scatterChart,artistPopularityChart,lineChart2;
   let tracksData = [];
 
   const clientId = '6df35adad2b6400792736a553e61b71c';
@@ -287,12 +62,15 @@ document.addEventListener('DOMContentLoaded', async function () {
       const labels = filteredTracks.slice(0, 20).map(track => track.name);
       const popularityData = filteredTracks.slice(0, 20).map(track => track.popularity);
       const durationData = filteredTracks.slice(0, 20).map(track => track.duration_ms / 1000);
+      const releaseDates = filteredTracks.slice(0, 20).map(track => new Date(track.album.release_date));
 
+      updateDurationByArtistLineChart(labels,durationData)
       updateBarChart(labels, popularityData);
       updateLineChart(labels, durationData);
       updatePieChart(labels, popularityData);
       updateScatterChart(filteredTracks.slice(0, 20));
       updateArtistPopularityChart(filteredTracks); // New addition to update artist popularity chart
+      
   }
 
   function updateBarChart(labels, popularityData) {
@@ -313,6 +91,13 @@ document.addEventListener('DOMContentLoaded', async function () {
           },
           options: {
               scales: {
+                x: {
+                    ticks: {
+                        autoSkip: true,
+                        maxRotation: 90,
+                        minRotation: 10
+                    }
+                },
                   y: {
                       beginAtZero: true
                   }
@@ -339,6 +124,13 @@ document.addEventListener('DOMContentLoaded', async function () {
           },
           options: {
               scales: {
+                x: {
+                    ticks: {
+                        autoSkip: true,
+                        maxRotation: 90,
+                        minRotation: 10
+                    }
+                },
                   y: {
                       beginAtZero: true
                   }
@@ -480,6 +272,35 @@ document.addEventListener('DOMContentLoaded', async function () {
           }
       });
   }
+    function updateDurationByArtistLineChart(labels, durationData) {    
+        // Check if chart instance exists and destroy it to prevent memory leaks
+        if (lineChart2) {
+            lineChart2.destroy();
+        }
+    
+        // Create new instance of line chart for 'lineChart3'
+        lineChart2 = new Chart(lineCtx2, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Average Duration (seconds)',
+                    data: durationData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
 
   async function main() {
       const accessToken = await getAccessToken();
