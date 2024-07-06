@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   let barChart, lineChart, pieChart, scatterChart,artistPopularityChart,lineChart2;
   let tracksData = [];
 
-  const clientId = '6df35adad2b6400792736a553e61b71c';
-  const clientSecret = '8ce26fc583d44152ba30cfa28d94b270';
+  const clientId = 'client_id';
+  const clientSecret = 'client_secret';
 
   async function getAccessToken() {
       const response = await fetch('https://accounts.spotify.com/api/token', {
